@@ -620,7 +620,7 @@ def plotOrigin(tx, ty, tz, rx, ry, rz, length, ghost=False):
 # set settings saved in 'settings.txt'
 def setSettings():
     global globalsettings
-    file = open("program files/settings.txt", "r")
+    file = open("settings.txt", "r")
     settings = {}
     for i in file:
         isname = True
@@ -1195,7 +1195,7 @@ def openSettingsWindow():
     settingswindow.wm_iconphoto(
         False,
         ImageTk.PhotoImage(
-            Image.open("program files/img/icon settings.png")
+            Image.open("img/icon settings.png")
         )
     )
     #settingswindow.resizable(width=0, height=0)
@@ -1757,7 +1757,7 @@ def openSettingsWindow():
         number_of_steps=3,
         width=316
     )
-    imgsrc = Image.open(f"program files/img/img presets {ctk.get_appearance_mode().lower()}.png")
+    imgsrc = Image.open(f"img/img presets {ctk.get_appearance_mode().lower()}.png")
     presetimg = ImageTk.PhotoImage(imgsrc)
     presetimage = ctk.CTkLabel(
         master=presetsframe,
@@ -2476,7 +2476,7 @@ def openColoursWindow():
     colourswindow.wm_iconphoto(
         False,
         ImageTk.PhotoImage(
-            Image.open("program files/img/icon colours.png")
+            Image.open("img/icon colours.png")
         )
     )
     #colourswindow.resizable(width=0, height=0)
@@ -2946,7 +2946,7 @@ def openColoursWindow():
     )
     colourblindselector.set(globalsettings["Colour_blind"])
     colourblindimg = ImageTk.PhotoImage(
-        Image.open(f"program files/img/img colourblind {ctk.get_appearance_mode().lower()}.png")
+        Image.open(f"img/img colourblind {ctk.get_appearance_mode().lower()}.png")
     )
     colourblindimage = ctk.CTkLabel(
         master=colourblindframe,
@@ -2983,7 +2983,7 @@ def openColoursWindow():
     )
     themeselector.set(globalsettings["Theme"])
     themeimg = ImageTk.PhotoImage(
-        Image.open(f"program files/img/img theme {ctk.get_appearance_mode().lower()}.png")
+        Image.open(f"img/img theme {ctk.get_appearance_mode().lower()}.png")
     )
     themeimage = ctk.CTkLabel(
         master=themesframe,
@@ -4453,7 +4453,7 @@ def openMainWindow():
     # create and configure window object
     root = ctk.CTk()
     root.title("InvKinGUI")
-    root.wm_iconphoto(False, ImageTk.PhotoImage(Image.open("program files/img/icon root.png")))
+    root.wm_iconphoto(False, ImageTk.PhotoImage(Image.open("img/icon root.png")))
     screenwidth = root.winfo_screenwidth()
     screenheight = root.winfo_screenheight()
     alignstr = '%dx%d+%d+%d' % (w, h, (screenwidth - w) / 2, (screenheight - h) / 2)
