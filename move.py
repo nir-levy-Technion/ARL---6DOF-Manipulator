@@ -95,6 +95,4 @@ class Motor:
         elif dxl_error != 0:
             print("%s" % self.packetHandler.getRxPacketError(dxl_error))
 
-        print("[ID:%03d] GoalPos:%03d  PresPos:%03d" % (self.DXL_ID, angle, self.dxl_present_position))
-
-        
+        print("[ID:%03d] GoalPos:%03d  PresPos:%03d" % (self.DXL_ID, angle, self._map(self.dxl_present_position,self.DXL_MINIMUM_POSITION_VALUE,self.DXL_MAXIMUM_POSITION_VALUE,0,360)))
