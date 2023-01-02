@@ -61,6 +61,7 @@ class Motor:
             print("%s" % self.packetHandler.getRxPacketError(dxl_error))
         else:
             print("Dynamixel has been successfully connected")
+    
     def Disable_Torque(self):
         
         dxl_comm_result, dxl_error = self.packetHandler.write1ByteTxRx(self.portHandler, self.DXL_ID, self.ADDR_TORQUE_ENABLE, self.TORQUE_DISABLE)
@@ -72,27 +73,36 @@ class Motor:
     def Close_Port(self):
         self.portHandler.closePort()
         
-    def _map(x, in_min, in_max, out_min, out_max):
-        return int((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
-	
-
+    
     def Write_Pos(self,angle):
-        position=self._map(angle,0,360,self.DXL_MINIMUM_POSITION_VALUE,self.DXL_MAXIMUM_POSITION_VALUE)
-        dxl_comm_result, dxl_error = self.packetHandler.write4ByteTxRx(self.portHandler, self.DXL_ID, self.ADDR_GOAL_POSITION, position)
+        dxl_comm_result, dxl_error = self.packetHandler.write4ByteTxRx(self.portHandler, self.DXL_ID, self.ADDR_GOAL_POSITION, angle)
         if dxl_comm_result != COMM_SUCCESS:
             print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
         elif dxl_error != 0:
             print("%s" % self.packetHandler.getRxPacketError(dxl_error))
-        while 1:
-            self.Read_Pos(angle)
-            if not abs(self.angle - self.dxl_present_position) > self.DXL_MOVING_STATUS_THRESHOLD:
-                break
+        # while 1:
+        #     self.Read_Pos()
+        #     if not abs(angle - self.dxl_present_position) > self.DXL_MOVING_STATUS_THRESHOLD:
+        #         break
             
-    def Read_Pos(self,angle):
+    def Read_Pos(self):
         self.dxl_present_position, dxl_comm_result, dxl_error = self.packetHandler.read4ByteTxRx(self.portHandler, self.DXL_ID, self.ADDR_PRESENT_POSITION)
         if dxl_comm_result != COMM_SUCCESS:
             print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
         elif dxl_error != 0:
             print("%s" % self.packetHandler.getRxPacketError(dxl_error))
-
-        print("[ID:%03d] GoalPos:%03d  PresPos:%03d" % (self.DXL_ID, angle, self._map(self.dxl_present_position,self.DXL_MINIMUM_POSITION_VALUE,self.DXL_MAXIMUM_POSITION_VALUE,0,360)))
+        pr_pos=self.dxl_present_position
+        #print("[ID:%03d] PresPos:%03d" % (self.DXL_ID,self.dxl_present_position))
+        return self.dxl_present_position
+    
+    def set_Max(self,max):
+        self.max=max
+    
+    def get_Max(self):
+        return self.max
+    
+    def set_Min(self,min):
+        self.min=min
+    
+    def get_Min(self):
+        return self.min
