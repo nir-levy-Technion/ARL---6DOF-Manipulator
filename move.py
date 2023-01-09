@@ -91,7 +91,6 @@ class Motor:
             print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
         elif dxl_error != 0:
             print("%s" % self.packetHandler.getRxPacketError(dxl_error))
-        pr_pos=self.dxl_present_position
         #print("[ID:%03d] PresPos:%03d" % (self.DXL_ID,self.dxl_present_position))
         return self.dxl_present_position
     

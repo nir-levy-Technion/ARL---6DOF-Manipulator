@@ -4554,7 +4554,7 @@ def openMainWindow():
     )
     txinverseup = ctk.CTkButton(
         master=txinverseframe,
-        text="Increment",
+        text="+",
         fg_color=getHex("Col1_btn"),
         text_color=fontcolour,
         hover_color=getHex("Col1_btn", False, True),
@@ -4563,7 +4563,7 @@ def openMainWindow():
     )
     tyinverseup = ctk.CTkButton(
         master=tyinverseframe,
-        text="Increment",
+        text="+",
         fg_color=getHex("Col2_btn"),
         text_color=fontcolour,
         hover_color=getHex("Col2_btn", False, True),
@@ -4572,7 +4572,7 @@ def openMainWindow():
     )
     tzinverseup = ctk.CTkButton(
         master=tzinverseframe,
-        text="Increment",
+        text="+",
         fg_color=getHex("Col3_btn"),
         text_color=fontcolour,
         hover_color=getHex("Col3_btn", False, True),
@@ -4581,7 +4581,7 @@ def openMainWindow():
     )
     rxinverseup = ctk.CTkButton(
         master=rxinverseframe,
-        text="Increment",
+        text="+",
         fg_color=getHex("Col4_btn"),
         text_color=fontcolour,
         hover_color=getHex("Col4_btn", False, True),
@@ -4590,7 +4590,7 @@ def openMainWindow():
     )
     ryinverseup = ctk.CTkButton(
         master=ryinverseframe,
-        text="Increment",
+        text="+",
         fg_color=getHex("Col5_btn"),
         text_color=fontcolour,
         hover_color=getHex("Col5_btn", False, True),
@@ -4599,7 +4599,7 @@ def openMainWindow():
     )
     rzinverseup = ctk.CTkButton(
         master=rzinverseframe,
-        text="Increment",
+        text="+",
         fg_color=getHex("Col6_btn"),
         text_color=fontcolour,
         hover_color=getHex("Col6_btn", False, True),
@@ -4680,7 +4680,7 @@ def openMainWindow():
     )
     txinversedown = ctk.CTkButton(
         master=txinverseframe,
-        text="Decrement",
+        text="-",
         fg_color=getHex("Col1_btn", True),
         text_color=fontcolour,
         hover_color=getHex("Col1_btn", True, True),
@@ -4689,7 +4689,7 @@ def openMainWindow():
     )
     tyinversedown = ctk.CTkButton(
         master=tyinverseframe,
-        text="Decrement",
+        text="-",
         fg_color=getHex("Col2_btn", True),
         text_color=fontcolour,
         hover_color=getHex("Col2_btn", True, True),
@@ -4698,7 +4698,7 @@ def openMainWindow():
     )
     tzinversedown = ctk.CTkButton(
         master=tzinverseframe,
-        text="Decrement",
+        text="-",
         fg_color=getHex("Col3_btn", True),
         text_color=fontcolour,
         hover_color=getHex("Col3_btn", True, True),
@@ -4707,7 +4707,7 @@ def openMainWindow():
     )
     rxinversedown = ctk.CTkButton(
         master=rxinverseframe,
-        text="Decrement",
+        text="-",
         fg_color=getHex("Col4_btn", True),
         text_color=fontcolour,
         hover_color=getHex("Col4_btn", True, True),
@@ -4716,7 +4716,7 @@ def openMainWindow():
     )
     ryinversedown = ctk.CTkButton(
         master=ryinverseframe,
-        text="Decrement",
+        text="-",
         fg_color=getHex("Col5_btn", True),
         text_color=fontcolour,
         hover_color=getHex("Col5_btn", True, True),
@@ -4725,7 +4725,7 @@ def openMainWindow():
     )
     rzinversedown = ctk.CTkButton(
         master=rzinverseframe,
-        text="Decrement",
+        text="-",
         fg_color=getHex("Col6_btn", True),
         text_color=fontcolour,
         hover_color=getHex("Col6_btn", True, True),
@@ -4734,7 +4734,7 @@ def openMainWindow():
     )
     inverseconfigtlabel1 = ctk.CTkLabel(
         master=inverseconfigtframe,
-        text="Increment / Decrement in",
+        text="+ / - in",
         width=180,
         **kwargslight
     )
@@ -4762,7 +4762,7 @@ def openMainWindow():
     )
     inverseconfigrlabel1 = ctk.CTkLabel(
         master=inverseconfigrframe,
-        text="Increment / Decrement in",
+        text="+ / - in",
         width=180,
         **kwargslight
     )
@@ -4856,7 +4856,7 @@ def openMainWindow():
     )
     forwardup1 = ctk.CTkButton(
         master=forwardframe1,
-        text="Increment",
+        text="+",
         fg_color=getHex("Col1_btn"),
         text_color=fontcolour,
         hover_color=getHex("Col1_btn", False, True),
@@ -4865,7 +4865,7 @@ def openMainWindow():
     )
     forwardup2 = ctk.CTkButton(
         master=forwardframe2,
-        text="Increment",
+        text="+",
         fg_color=getHex("Col2_btn"),
         text_color=fontcolour,
         hover_color=getHex("Col2_btn", False, True),
@@ -4874,7 +4874,7 @@ def openMainWindow():
     )
     forwardup3 = ctk.CTkButton(
         master=forwardframe3,
-        text="Increment",
+        text="+",
         fg_color=getHex("Col3_btn"),
         text_color=fontcolour,
         hover_color=getHex("Col3_btn", False, True),
@@ -4883,7 +4883,7 @@ def openMainWindow():
     )
     forwardup4 = ctk.CTkButton(
         master=forwardframe4,
-        text="Increment",
+        text="+",
         fg_color=getHex("Col4_btn"),
         text_color=fontcolour,
         hover_color=getHex("Col4_btn", False, True),
@@ -4892,7 +4892,7 @@ def openMainWindow():
     )
     forwardup5 = ctk.CTkButton(
         master=forwardframe5,
-        text="Increment",
+        text="+",
         fg_color=getHex("Col5_btn"),
         text_color=fontcolour,
         hover_color=getHex("Col5_btn", False, True),
@@ -4901,7 +4901,7 @@ def openMainWindow():
     )
     forwardup6 = ctk.CTkButton(
         master=forwardframe6,
-        text="Increment",
+        text="+",
         fg_color=getHex("Col6_btn"),
         text_color=fontcolour,
         hover_color=getHex("Col6_btn", False, True),
@@ -4982,7 +4982,7 @@ def openMainWindow():
     )
     forwarddown1 = ctk.CTkButton(
         master=forwardframe1,
-        text="Decrement",
+        text="-",
         fg_color=getHex("Col1_btn", True),
         text_color=fontcolour,
         hover_color=getHex("Col1_btn", True, True),
@@ -4991,7 +4991,7 @@ def openMainWindow():
     )
     forwarddown2 = ctk.CTkButton(
         master=forwardframe2,
-        text="Decrement",
+        text="-",
         fg_color=getHex("Col2_btn", True),
         text_color=fontcolour,
         hover_color=getHex("Col2_btn", True, True),
@@ -5000,7 +5000,7 @@ def openMainWindow():
     )
     forwarddown3 = ctk.CTkButton(
         master=forwardframe3,
-        text="Decrement",
+        text="-",
         fg_color=getHex("Col3_btn", True),
         text_color=fontcolour,
         hover_color=getHex("Col3_btn", True, True),
@@ -5009,7 +5009,7 @@ def openMainWindow():
     )
     forwarddown4 = ctk.CTkButton(
         master=forwardframe4,
-        text="Decrement",
+        text="-",
         fg_color=getHex("Col4_btn", True),
         text_color=fontcolour,
         hover_color=getHex("Col4_btn", True, True),
@@ -5018,7 +5018,7 @@ def openMainWindow():
     )
     forwarddown5 = ctk.CTkButton(
         master=forwardframe5,
-        text="Decrement",
+        text="-",
         fg_color=getHex("Col5_btn", True),
         text_color=fontcolour,
         hover_color=getHex("Col5_btn", True, True),
@@ -5027,7 +5027,7 @@ def openMainWindow():
     )
     forwarddown6 = ctk.CTkButton(
         master=forwardframe6,
-        text="Decrement",
+        text="-",
         fg_color=getHex("Col6_btn", True),
         text_color=fontcolour,
         hover_color=getHex("Col6_btn", True, True),
@@ -5036,7 +5036,7 @@ def openMainWindow():
     )
     forwardconfiglabel1 = ctk.CTkLabel(
         master=forwardconfigframe,
-        text="Increment / Decrement in",
+        text="+ / - in",
         width=180,
         **kwargslight
     )
