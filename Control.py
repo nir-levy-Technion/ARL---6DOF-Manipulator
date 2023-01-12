@@ -38,12 +38,12 @@ class DynamixelArm:
     
     
     def _map(self,x, in_min, in_max, out_min, out_max):
-        """_summary_
+        """gets a number and maps it from one ragne to another range.
 
         Returns:
-            _type_: _description_
+           float: the number in the new range
         """
-        return int((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+        return float((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
     
     def set_range(self,id,min,max):
         """_summary_
