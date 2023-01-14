@@ -4476,7 +4476,7 @@ def openMainWindow():
     widgetpack = {
         "padx": 8,
         "pady": 8,
-        "sticky": N + S + E + W
+        "sticky": E + W
 
     }
 

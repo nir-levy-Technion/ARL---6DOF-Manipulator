@@ -46,83 +46,92 @@ class PS4Controller:
     def Tri(self):
         for event in self.ps4.read_loop():
             if event.type == evdev.ecodes.EV_KEY:
-                if event.code == evdev.ecodes.
-                    return True
-                else:
-                    return False
+                if event.code == evdev.ecodes.BTN_WEST:
+                    return event.value#1-pressed,0-released
                 
     def Square(self):
         for event in self.ps4.read_loop():
             if event.type == evdev.ecodes.EV_KEY:
-                if event.code == evdev.ecodes.
-                    return True
-                else:
-                    return False   
+                if event.code == evdev.ecodes.BTN_NORTH:
+                    return event.value#1-pressed,0-released
                      
     def X(self):
         for event in self.ps4.read_loop():
             if event.type == evdev.ecodes.EV_KEY:
-                if event.code == evdev.ecodes.
-                    return True
-                else:
-                    return False  
+                if event.code == evdev.ecodes.BTN_SOUTH:
+                    return event.value#1-pressed,0-released
                   
     def Circle(self):
         for event in self.ps4.read_loop():
             if event.type == evdev.ecodes.EV_KEY:
-                if event.code == evdev.ecodes.
-                    return True
-                else:
-                    return False  
-    def TR(self):
+                if event.code == evdev.ecodes.BTN_EAST:
+                    return event.value#1-pressed,0-released
+    def R1(self):
         for event in self.ps4.read_loop():
             if event.type == evdev.ecodes.EV_KEY:
-                if event.code == evdev.ecodes.
-                    return True
-                else:
-                    return False  
-    def TR2(self):
+               if event.code == evdev.ecodes.BTN_TR:
+                    return event.value#1-pressed,0-released
+    def R2(self):
         for event in self.ps4.read_loop():
             if event.type == evdev.ecodes.EV_KEY:
-                if event.code == evdev.ecodes.
-                    return True
-                else:
-                    return False  
-    def LR(self):
+               if event.code == evdev.ecodes.BTN_TR2:
+                    return event.value#1-pressed,0-released
+    def L1(self):
         for event in self.ps4.read_loop():
             if event.type == evdev.ecodes.EV_KEY:
-                if event.code == evdev.ecodes.
-                    return True
-                else:
-                    return False  
-    def LR2(self):
+                if event.code == evdev.ecodes.BTN_TL:
+                    return event.value#1-pressed,0-released
+    def L2(self):
         for event in self.ps4.read_loop():
             if event.type == evdev.ecodes.EV_KEY:
-                if event.code == evdev.ecodes.
-                    return True
-                else:
-                    return False  
+                if event.code == evdev.ecodes.BTN_TL2:
+                    return event.value#1-pressed,0-released
     def options(self):
         for event in self.ps4.read_loop():
             if event.type == evdev.ecodes.EV_KEY:
-                if event.code == evdev.ecodes.
-                    return True
-                else:
-                    return False  
+                if event.code == evdev.ecodes.BTN_START:
+                    return event.value#1-pressed,0-released
     def share(self):
         for event in self.ps4.read_loop():
             if event.type == evdev.ecodes.EV_KEY:
-                if event.code == evdev.ecodes.
-                    return True
-                else:
-                    return False  
+                if event.code == evdev.ecodes.BTN_SELECT:
+                    return event.value#1-pressed,0-released
+    def ThumbR(self):
+        for event in self.ps4.read_loop():
+            if event.type == evdev.ecodes.EV_KEY:
+                if event.code == evdev.ecodes.BTN_THUMBR:
+                    return event.value#1-pressed,0-released
+    def ThumbL(self):
+        for event in self.ps4.read_loop():
+            if event.type == evdev.ecodes.EV_KEY:
+                if event.code == evdev.ecodes.BTN_THUMBL:
+                    return event.value#1-pressed,0-released
+    def UP(self):
+        for event in self.ps4.read_loop():
+            if event.type == evdev.ecodes.EV_KEY:
+                if event.code == evdev.ecodes.BTN_DPAD_UP:
+                    return event.value#1-pressed,0-released
+    def DOWN(self):
+        for event in self.ps4.read_loop():
+            if event.type == evdev.ecodes.EV_KEY:
+                if event.code == evdev.ecodes.BTN_DPAD_DOWN:
+                    return event.value#1-pressed,0-released
+    def LEFT(self):
+        for event in self.ps4.read_loop():
+            if event.type == evdev.ecodes.EV_KEY:
+                if event.code == evdev.ecodes.BTN_DPAD_LEFT:
+                    return event.value#1-pressed,0-released
+                
+    def RIGHT(self):
+        for event in self.ps4.read_loop():
+            if event.type == evdev.ecodes.EV_KEY:
+                if event.code == evdev.ecodes.BTN_DPAD_RIGHT:
+                    return event.value#1-pressed,0-released
     def kill(self):
         for event in self.ps4.read_loop():
             if event.type == evdev.ecodes.EV_KEY:
-                if event.code == evdev.ecodes.
-                    return True
-                else:
-                    return False  
+                if event.code == evdev.ecodes.BTN_MODE:
+                    return event.value#1-pressed,0-released
         
 ctrl=PS4Controller()
 while True: 
