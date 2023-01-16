@@ -1,5 +1,5 @@
 import os
-
+import time
 if os.name == 'nt':
     import msvcrt
     def getch():
@@ -93,7 +93,7 @@ class Motor:
             print("%s" % self.packetHandler.getRxPacketError(dxl_error))
         #print("[ID:%03d] PresPos:%03d" % (self.DXL_ID,self.dxl_present_position))
         return self.dxl_present_position
-    
+        
     def set_Max(self,max):
         self.max=max
     
@@ -105,3 +105,4 @@ class Motor:
     
     def get_Min(self):
         return self.min
+

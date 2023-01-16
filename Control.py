@@ -10,15 +10,18 @@ class DynamixelArm:
             _type_: _description_
         """
         MODE="FORWARD"
-        ctrl=PS4Controller
-        self.ps4=ctrl.PS4Controller()
+        try:
+            ctrl=PS4Controller
+            self.ps4=ctrl.PS4Controller()
+        except:
+            print("No Controller Found")
         self.M1=move.Motor(1)
         self.M2=move.Motor(2)
         self.M3=move.Motor(3)
         self.M4=move.Motor(4)
         self.M5=move.Motor(5)
         self.M6=move.Motor(6)
-        self.RANGES=[[-501433,501433],[-501433,501433],[-501433,501433],[-501433,501433],[-501433,501433],[-501433,501433]]
+        self.RANGES=[[-500000,500000],[-301160,306738],[-278852,278852],[-500000,500000],[-301160,301160],[-500000,500000]]
         self.Sent_Positions=[0,0,0,0,0,0]
         self.motors=[self.M1,self.M2,self.M3,self.M4,self.M5,self.M6]
 
@@ -90,12 +93,12 @@ class DynamixelArm:
         Returns:
             list: list of current angles
         """
-        self.M1_angle=self._map(self.M1.ReadPos(),-501433,501433,0,360)
-        self.M2_angle=self._map(self.M2.ReadPos(),-501433,501433,0,360)
-        self.M3_angle=self._map(self.M3.ReadPos(),-501433,501433,0,360)
-        self.M4_angle=self._map(self.M4.ReadPos(),-501433,501433,0,360)
-        self.M5_angle=self._map(self.M5.ReadPos(),-501433,501433,0,360)
-        self.M6_angle=self._map(self.M6.ReadPos(),-501433,501433,0,360)
+        self.M1_angle=self._map(self.M1.Read_Pos(),-501433,501433,0,360)
+        self.M2_angle=self._map(self.M2.Read_Pos(),-501433,501433,0,360)
+        self.M3_angle=self._map(self.M3.Read_Pos(),-501433,501433,0,360)
+        self.M4_angle=self._map(self.M4.Read_Pos(),-501433,501433,0,360)
+        self.M5_angle=self._map(self.M5.Read_Pos(),-501433,501433,0,360)
+        self.M6_angle=self._map(self.M6.Read_Pos(),-501433,501433,0,360)
         self.angles=[self.M1_angle,self.M2_angle,self.M3_angle,self.M4_angle,self.M5_angle,self.M6_angle]
         return self.angles
     
@@ -188,4 +191,5 @@ class DynamixelArm:
         self.M1.Close_Port()
 
 arm=DynamixelArm()
-arm.Ps4Control()
+arm.M6.Write_Pos(0)
+#arm.Ps4Control()
