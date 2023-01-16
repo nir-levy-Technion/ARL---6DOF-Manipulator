@@ -133,7 +133,5 @@ class PS4Controller:
                 if event.code == evdev.ecodes.BTN_MODE:
                     return event.value#1-pressed,0-released
         
-ctrl=PS4Controller()
-while True: 
-    print(ctrl.get_Right_thumb())
+
 

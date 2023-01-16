@@ -1,5 +1,6 @@
 import move
-
+import PS4Controller
+import time
 class DynamixelArm:
     
     def __init__(self) -> None:
@@ -8,6 +9,9 @@ class DynamixelArm:
         Returns:
             _type_: _description_
         """
+        MODE="FORWARD"
+        ctrl=PS4Controller
+        self.ps4=ctrl.PS4Controller()
         self.M1=move.Motor(1)
         self.M2=move.Motor(2)
         self.M3=move.Motor(3)
@@ -117,6 +121,64 @@ class DynamixelArm:
         """
         return self.Sent_Positions
     
+    def Ps4Control(self):
+        start_time = None
+        kill=False
+        last_press_time = None
+        double_press_threshold = 0.5 # seconds
+
+        if self.ps4.options()==1:
+            start_time = time.time()
+            if self.ps4.options() == 0: # button released
+                if start_time is not None:
+                    if time.time() - start_time >= 5:
+                        print("Started PS4 control")
+                        while not kill:
+                            kill_btn=self.ps4.kill()
+                            mode_btn=self.ps4.share()
+                            
+                            #check if to kill the arm
+                            if kill_btn==1:
+                                kill_btn=self.ps4.kill()
+                                if kill_btn==0:
+                                    print("Exit")
+                                    self.Exit()
+                                 
+                            if mode_btn==1  :
+                                start_time = time.time()
+                                mode_btn=self.ps4.share()
+                                if mode_btn==0:
+                                    if time.time() - start_time >= 5:
+                                        if MODE=="FORWARD":
+                                            MODE="INVERSE"
+                                            print("MODE CHANGED TO INVERSE KINEMATIC!!! PAY ATTENTION!")
+                                        elif MODE=="INVERSE":
+                                            MODE="FORWARD"  
+                                            print("MODE CHANGED TO FORWARD KINEMATIC!!! PAY ATTENTION!")
+                                        elif MODE=="SELFAWARENESS":
+                                            MODE="FORWARD"  
+                                            print("MODE CHANGED TO FORWARD KINEMATIC!!! PAY ATTENTION!")
+                            if mode_btn==1 and MODE!="SELFAWARENESS":
+                                current_time = time.time()
+                                if last_press_time is not None and current_time - last_press_time <= double_press_threshold:
+                                    MODE="SELFAWARENESS"
+                                    print("MODE CHANGED TO SELFAWARENESS!!! PAY ATTENTION!")   
+                                    last_press_time = current_time
+                            
+                            if MODE=="FORWARD":
+                            #FORWARD KINEMATICS CONTROL  
+                                pass  
+                            if MODE=="INVERSE":
+                            #INVERSE KINEMATICS CONTROL  
+                                pass  
+                            if MODE=="SELFAWARENESS":
+                            #SELFAWARENESS CONTROL  - POLICY RUNNING NEURAL NETWORK 
+                                pass 
+                            if MODE=="PLANNING":
+                            #PLANNING CONTROL  - Running Predetermined Plan
+                                pass 
+            
+
     def Exit(self):
         """Kill motors
 
@@ -124,3 +186,6 @@ class DynamixelArm:
             void
         """
         self.M1.Close_Port()
+
+arm=DynamixelArm()
+arm.Ps4Control()
