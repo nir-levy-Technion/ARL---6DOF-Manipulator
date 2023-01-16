@@ -34,7 +34,7 @@ class Motor:
         # ex) Windows: "COM*", Linux: "/dev/ttyUSB*", Mac: "/dev/tty.usbserial-*"
         DEVICENAME                  = '/dev/ttyUSB0'
         self.TORQUE_ENABLE               = 1     # Value for enabling the torque
-        TORQUE_DISABLE              = 0     # Value for disabling the torque
+        self.TORQUE_DISABLE              = 0     # Value for disabling the torque
         self.DXL_MOVING_STATUS_THRESHOLD = 20    # Dynamixel moving status threshold
         self.portHandler = PortHandler(DEVICENAME)
         self.packetHandler = PacketHandler(PROTOCOL_VERSION)
@@ -86,6 +86,7 @@ class Motor:
         #         break
             
     def Read_Pos(self):
+        #self.portHandler.ser.reset_input_buffer()
         self.dxl_present_position, dxl_comm_result, dxl_error = self.packetHandler.read4ByteTxRx(self.portHandler, self.DXL_ID, self.ADDR_PRESENT_POSITION)
         if dxl_comm_result != COMM_SUCCESS:
             print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
@@ -105,4 +106,28 @@ class Motor:
     
     def get_Min(self):
         return self.min
-
+# m1=Motor(1)
+# m2=Motor(2)
+# m3=Motor(3)
+# m4=Motor(4)
+# m5=Motor(5)
+# m6=Motor(6)
+# while True:
+#     m6.Enable_Torque()
+#     m6.Write_Pos(0)
+#     print(m6.Read_Pos())
+#     m5.Enable_Torque()
+#     m5.Write_Pos(0)
+#     print(m5.Read_Pos())
+#     m4.Enable_Torque()
+#     m4.Write_Pos(0)
+#     print(m4.Read_Pos())
+#     m3.Enable_Torque()
+#     m3.Write_Pos(0)
+#     print(m3.Read_Pos())
+#     m2.Enable_Torque()
+#     m2.Write_Pos(0)
+#     print(m2.Read_Pos())
+#     m1.Enable_Torque()
+#     m1.Write_Pos(0)
+#     print(m1.Read_Pos())

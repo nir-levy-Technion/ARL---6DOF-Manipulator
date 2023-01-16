@@ -93,12 +93,13 @@ class DynamixelArm:
         Returns:
             list: list of current angles
         """
-        self.M1_angle=self._map(self.M1.Read_Pos(),-501433,501433,0,360)
-        self.M2_angle=self._map(self.M2.Read_Pos(),-501433,501433,0,360)
-        self.M3_angle=self._map(self.M3.Read_Pos(),-501433,501433,0,360)
-        self.M4_angle=self._map(self.M4.Read_Pos(),-501433,501433,0,360)
-        self.M5_angle=self._map(self.M5.Read_Pos(),-501433,501433,0,360)
-        self.M6_angle=self._map(self.M6.Read_Pos(),-501433,501433,0,360)
+        self.EnableTorque()
+        self.M1_angle=self._map(self.M1.Read_Pos(),-501433,501433,-180,180)
+        self.M2_angle=self._map(self.M2.Read_Pos(),-501433,501433,-180,180)
+        self.M3_angle=self._map(self.M3.Read_Pos(),-501433,501433,-180,180)
+        self.M4_angle=self._map(self.M4.Read_Pos(),-501433,501433,-180,180)
+        self.M5_angle=self._map(self.M5.Read_Pos(),-501433,501433,-180,180)
+        self.M6_angle=self._map(self.M6.Read_Pos(),-501433,501433,-180,180)
         self.angles=[self.M1_angle,self.M2_angle,self.M3_angle,self.M4_angle,self.M5_angle,self.M6_angle]
         return self.angles
     
@@ -191,5 +192,6 @@ class DynamixelArm:
         self.M1.Close_Port()
 
 arm=DynamixelArm()
-arm.M6.Write_Pos(0)
+print(arm.get_Current_Pos())
+arm.DisableTorque()
 #arm.Ps4Control()
