@@ -1,6 +1,9 @@
 import move
 import PS4Controller
 import time
+from ikpy import chain
+import numpy as np
+
 class DynamixelArm:
     
     def __init__(self) -> None:
@@ -28,7 +31,8 @@ class DynamixelArm:
             m.SetCurrentLimit(6000)
             m.SetAccelLimit(500)
             m.SetVelocityLimit(100)
-
+        self.Home()
+        
     def EnableTorque(self):
         """_summary_
 
@@ -131,6 +135,34 @@ class DynamixelArm:
             list: positions for all motors
         """
         return self.Sent_Positions
+    def SetXYZ(self,position,orientation,q_init):
+        """Inverse Kinemtics
+
+        Args:
+            position (List[]): [x,y,z,1],
+            orientation (List[,]): [[u_x,v_x,w_x],[u_y,v_y,w_y],[u_z,v_z,w_z]]
+            q_init (q_init = np.array([0, 0, 0, 0, 0, 0])): initial values conditions,joint angles.
+        """
+        # Define the DH parameters of the robot arm
+        dh_params = [
+        {'alpha': np.pi/2, 'a': 0, 'd': 0.3, 'theta': 0},
+        {'alpha': 0, 'a': 0.4, 'd': 0, 'theta': 0},
+        {'alpha': 0, 'a': 0.4, 'd': 0, 'theta': 0},
+        {'alpha': np.pi/2, 'a': 0, 'd': 0.4, 'theta': 0},
+        {'alpha': np.pi/2, 'a': 0, 'd': 0.4, 'theta': 0},
+        {'alpha': 0, 'a': 0, 'd': 0, 'theta': 0}
+        ]
+
+       # Create an instance of the Chain class
+        my_chain = chain.Chain.from_dh_parameters(dh_params)
+
+        # Define the desired position and orientation of the end effector
+        end_effector_pose = np.array([orientation, position])
+        
+        joint_angles = my_chain.inverse_kinematics(end_effector_pose, q_init)
+        print(joint_angles)
+        return joint_angles
+
     def Home(self):
         finished=False
         while not finished:
