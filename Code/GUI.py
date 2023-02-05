@@ -15,7 +15,7 @@ class ArmControlGUI(QWidget):
     
         motor1_label = QLabel("Motor 1:")
         self.motor1_slider = QSlider(Qt.Horizontal)
-        self.motor1_slider.setMinimum(0)
+        self.motor1_slider.setMinimum(-180)
         self.motor1_slider.setMaximum(180)
         self.motor1_slider.setTickInterval(10)
         self.motor1_slider.setTickPosition(QSlider.TicksBelow)
@@ -23,7 +23,7 @@ class ArmControlGUI(QWidget):
         
         motor2_label = QLabel("Motor 2:")
         self.motor2_slider = QSlider(Qt.Horizontal)
-        self.motor2_slider.setMinimum(0)
+        self.motor2_slider.setMinimum(-180)
         self.motor2_slider.setMaximum(180)
         self.motor2_slider.setTickInterval(10)
         self.motor2_slider.setTickPosition(QSlider.TicksBelow)
@@ -31,7 +31,7 @@ class ArmControlGUI(QWidget):
         
         motor3_label = QLabel("Motor 3:")
         self.motor3_slider = QSlider(Qt.Horizontal)
-        self.motor3_slider.setMinimum(0)
+        self.motor3_slider.setMinimum(-180)
         self.motor3_slider.setMaximum(180)
         self.motor3_slider.setTickInterval(10)
         self.motor3_slider.setTickPosition(QSlider.TicksBelow)
@@ -39,7 +39,7 @@ class ArmControlGUI(QWidget):
         
         motor4_label = QLabel("Motor 4:")
         self.motor4_slider = QSlider(Qt.Horizontal)
-        self.motor4_slider.setMinimum(0)
+        self.motor4_slider.setMinimum(-180)
         self.motor4_slider.setMaximum(180)
         self.motor4_slider.setTickInterval(10)
         self.motor4_slider.setTickPosition(QSlider.TicksBelow)
@@ -47,7 +47,7 @@ class ArmControlGUI(QWidget):
         
         motor5_label = QLabel("Motor 5:")
         self.motor5_slider = QSlider(Qt.Horizontal)
-        self.motor5_slider.setMinimum(0)
+        self.motor5_slider.setMinimum(-180)
         self.motor5_slider.setMaximum(180)
         self.motor5_slider.setTickInterval(10)
         self.motor5_slider.setTickPosition(QSlider.TicksBelow)
@@ -55,7 +55,7 @@ class ArmControlGUI(QWidget):
         
         motor6_label = QLabel("Motor 6:")
         self.motor6_slider = QSlider(Qt.Horizontal)
-        self.motor6_slider.setMinimum(0)
+        self.motor6_slider.setMinimum(-180)
         self.motor6_slider.setMaximum(180)
         self.motor6_slider.setTickInterval(10)
         self.motor6_slider.setTickPosition(QSlider.TicksBelow)
@@ -157,10 +157,13 @@ class ArmControlGUI(QWidget):
         self.motor5_angle.setText(str(self.motor5_slider.value()))
         self.motor6_angle.setText(str(self.motor6_slider.value()))
         self.message_log.append("Current position retrieved.")
+        self.message_log.append(self.motor1_angle.text()+","+self.motor2_angle.text()+","+self.motor3_angle.text()+","+self.motor4_angle.text()+","+self.motor5_angle.text()+","+self.motor6_angle.text())
 
     def set_arm(self):
         # Send angles from sliders to robot arm here
         self.message_log.append("Setting arm position...")
+        self.message_log.append(self.motor1_angle.text()+","+self.motor2_angle.text()+","+self.motor3_angle.text()+","+self.motor4_angle.text()+","+self.motor5_angle.text()+","+self.motor6_angle.text())
+
         pass
 
     def get_ik(self):
@@ -169,11 +172,17 @@ class ArmControlGUI(QWidget):
         y = self.y_input.text()
         z = self.z_input.text()
         self.message_log.append(f"Getting IK solution for x:{x}, y:{y}, z:{z}")
+        
         pass
 
     def set_ik(self):
         # Send inverse kinematics solution to robot arm here
+        x = self.x_input.text()
+        y = self.y_input.text()
+        z = self.z_input.text()
         self.message_log.append("Setting arm position using IK...")
+        self.message_log.append(f"Setting arm position using IK for x:{x}, y:{y}, z:{z}")
+
         pass
 
     def clear_log(self):
