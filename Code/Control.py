@@ -4,7 +4,7 @@ import time
 from ikpy import chain
 import numpy as np
 
-class DynamixelArm:
+class Arm:
     
     def __init__(self) -> None:
         """_summary_
@@ -171,7 +171,6 @@ class DynamixelArm:
             if not self.inRange(self.motors[1].Read_Pos(),1):
                 raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
             if self.motors[1].Read_Pos()==0:
-                print("Motor 2 Home")
                 self.motors[0].Enable_Torque()
                 self.motors[0].Write_Pos(0)
                 if not self.inRange(self.motors[0].Read_Pos(),0):
@@ -215,7 +214,7 @@ class DynamixelArm:
                         while not kill:
                             kill_btn=self.ps4.kill()
                             mode_btn=self.ps4.share()
-                            
+                            options_btn=self.ps4.options()
                             #check if to kill the arm
                             if kill_btn==1:
                                 kill_btn=self.ps4.kill()
@@ -243,6 +242,14 @@ class DynamixelArm:
                                     MODE="SELFAWARENESS"
                                     print("MODE CHANGED TO SELFAWARENESS!!! PAY ATTENTION!")   
                                     last_press_time = current_time
+                                    
+                            if mode_btn==1 and options_btn==1 :
+                                start_time = time.time()
+                                mode_btn=self.ps4.share()
+                                if mode_btn==0 and options_btn==0:
+                                    if time.time() - start_time >= 5:
+                                        MODE="PLANNING"
+                                            print("MODE CHANGED TO PLANNING !!! PAY ATTENTION!")
                             
                             if MODE=="FORWARD":
                             #FORWARD KINEMATICS CONTROL  
@@ -266,7 +273,3 @@ class DynamixelArm:
         """
         self.M1.Close_Port()
 
-arm=DynamixelArm()
-print(arm.get_Current_Pos())
-arm.DisableTorque()
-#arm.Ps4Control()
