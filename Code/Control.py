@@ -3,7 +3,29 @@ import PS4Controller
 import time
 from ikpy import chain
 import numpy as np
+import socket
 
+class Gripper():
+    def __init__(self) -> None:
+        self.HOST = '172.20.10.6'  # replace with the IP address of your ESP
+        self.PORT = 80  # replace with the port number you set up on the ESP
+
+    def pickup(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((self.HOST, self.PORT))
+            s.sendall(b'170')
+            success = s.recv(1024)
+            print('Received', repr(success))
+            return success
+
+    def release(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((self.HOST, self.PORT))
+            s.sendall(b'150')
+            success = s.recv(1024)
+            print('Received', repr(success))
+            return success
+        
 class Arm:
     
     def __init__(self) -> None:
