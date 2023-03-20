@@ -30,9 +30,10 @@ class Arm:
         for m in self.motors:
             m.SetCurrentLimit(15000)
             m.SetAccelLimit(500)
-            m.SetVelocityLimit(100)
+            m.SetVelocityLimit(200)
         self.EnableTorque()
         self.Home()
+        # self.Homeorder()
         
     def EnableTorque(self):
         """_summary_
@@ -153,7 +154,7 @@ class Arm:
             list: positions for all motors
         """
         return self.Sent_Positions
-    def SetXYZ(self,position,orientation,q_init):
+    def SetXYZ(self,position,orientation,q_init=np.array([0, 0, 0, 0, 0, 0])):
         """Inverse Kinemtics
 
         Args:
@@ -180,39 +181,42 @@ class Arm:
         joint_angles = my_chain.inverse_kinematics(end_effector_pose, q_init)
         print(joint_angles)
         return joint_angles
-
+    
     def Home(self):
+        self.set_Current_Pos([0,0,0,0,0,0])
+        
+    def Homeorder(self):
         finished=False
         while not finished:
             self.motors[1].Enable_Torque()
             self.motors[1].Write_Pos(0)
-            if not self.inRange(self.motors[1].Read_Pos(),1):
-                raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
+            # if not self.inRange(self.motors[1].Read_Pos(),1):
+            #     raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
             if self.motors[1].Read_Pos()==0:
                 self.motors[0].Enable_Torque()
                 self.motors[0].Write_Pos(0)
-                if not self.inRange(self.motors[0].Read_Pos(),0):
-                    raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
+                # if not self.inRange(self.motors[0].Read_Pos(),0):
+                #     raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
                 if self.motors[0].Read_Pos()==0:
                     self.motors[2].Enable_Torque()
                     self.motors[2].Write_Pos(0)
-                    if not self.inRange(self.motors[2].Read_Pos(),2):
-                        raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
+                    # if not self.inRange(self.motors[2].Read_Pos(),2):
+                    #     raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
                     if self.motors[2].Read_Pos()==0:
                         self.motors[3].Enable_Torque()
                         self.motors[3].Write_Pos(0)
-                        if not self.inRange(self.motors[3].Read_Pos(),3):
-                            raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
+                        # if not self.inRange(self.motors[3].Read_Pos(),3):
+                        #     raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
                         if self.motors[3].Read_Pos()==0:
                             self.motors[4].Enable_Torque()
                             self.motors[4].Write_Pos(0)
-                            if not self.inRange(self.motors[4].Read_Pos(),4):
-                                raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
+                            # if not self.inRange(self.motors[4].Read_Pos(),4):
+                            #     raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
                             if self.motors[4].Read_Pos()==0:
                                 self.motors[5].Enable_Torque()
                                 self.motors[5].Write_Pos(0)
-                                if not self.inRange(self.motors[5].Read_Pos(),5):
-                                    raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
+                                # if not self.inRange(self.motors[5].Read_Pos(),5):
+                                #     raise Exception("Out of range, Homing failed, Try moving the arm and homing again")
                                 if self.motors[5].Write_Pos(0)==0:
                                     finished=True
 
@@ -313,3 +317,5 @@ class Gripper():
             print('Received', repr(success))
             return success
         
+arm=Arm()
+# arm.DisableTorque()
