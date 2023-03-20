@@ -3,7 +3,7 @@ import PS4Controller
 import time
 from ikpy import chain
 import numpy as np
-
+import socket 
 class Arm:
     
     def __init__(self) -> None:
@@ -14,7 +14,7 @@ class Arm:
         """
         MODE="FORWARD"
         try:
-            ctrl=PS4Controller
+            ctrl=PS4Controller()
             self.ps4=ctrl.PS4Controller()
         except:
             print("No Controller Found")
@@ -28,9 +28,10 @@ class Arm:
         self.Sent_Positions=[0,0,0,0,0,0]
         self.motors=[self.M1,self.M2,self.M3,self.M4,self.M5,self.M6]
         for m in self.motors:
-            m.SetCurrentLimit(6000)
+            m.SetCurrentLimit(15000)
             m.SetAccelLimit(500)
             m.SetVelocityLimit(100)
+        self.EnableTorque()
         self.Home()
         
     def EnableTorque(self):
@@ -50,8 +51,7 @@ class Arm:
         """
         for motor in self.motors:
             motor.Disable_Torque()
-    
-    
+
     def _map(self,x, in_min, in_max, out_min, out_max):
         """gets a number and maps it from one ragne to another range.
 
@@ -101,14 +101,17 @@ class Arm:
         Returns:
             list: list of current angles
         """
-        self.EnableTorque()
-        self.M1_angle=self._map(self.M1.Read_Pos(),-501433,501433,-180,180)
-        self.M2_angle=self._map(self.M2.Read_Pos(),-501433,501433,-180,180)
-        self.M3_angle=self._map(self.M3.Read_Pos(),-501433,501433,-180,180)
-        self.M4_angle=self._map(self.M4.Read_Pos(),-501433,501433,-180,180)
-        self.M5_angle=self._map(self.M5.Read_Pos(),-501433,501433,-180,180)
-        self.M6_angle=self._map(self.M6.Read_Pos(),-501433,501433,-180,180)
+        # self.EnableTorque()
+        self.M1_angle=int(self._map(self.M1.Read_Pos(),-501433,501433,-180,180))
+        self.M2_angle=int(self._map(self.M2.Read_Pos(),-501433,501433,-180,180))
+        self.M3_angle=int(self._map(self.M3.Read_Pos(),-501433,501433,-180,180))
+        self.M4_angle=int(self._map(self.M4.Read_Pos(),-501433,501433,-180,180))
+        self.M5_angle=int(self._map(self.M5.Read_Pos(),-501433,501433,-180,180))
+        self.M6_angle=int(self._map(self.M6.Read_Pos(),-501433,501433,-180,180))
         self.angles=[self.M1_angle,self.M2_angle,self.M3_angle,self.M4_angle,self.M5_angle,self.M6_angle]
+        for idx,angle in enumerate(self.angles):
+            if angle>360:
+                self.angles[idx]=angle-1541769.5
         return self.angles
     
     def set_Current_Pos(self,angles):
@@ -117,14 +120,29 @@ class Arm:
         Returns:
             void: setting angles 
         """
-        for idx in range(self.motors):
-            pos=self._map(angles[idx],0,360,-501433,501433)
-            if pos>=self.RANGES[idx][0] and pos<=self.RANGES[idx][1]:
-                self.motors[idx].Write_Pos(angles[idx])
-                self.Sent_Positions[idx]=angles[idx]
-            else:
-                print("Angle "+str(idx)+" is out of range! ")
+        for idx in range(len(self.motors)):
+            pos=int(self._map(angles[idx],-180,180,-501433,501433))
+            print(pos)
+            # if pos>=self.RANGES[idx][0] and pos<=self.RANGES[idx][1]:
+            self.motors[idx].Write_Pos(pos)
+            self.Sent_Positions[idx]=pos
+            # else:
+            #     print("Angle "+str(idx)+" is out of range! ")
     
+    def set_Current_Pos_order(self,angles,order):
+        """get all angles and set positions 
+
+        Returns:
+            void: setting angles 
+        """
+        
+        for m in order:
+            real_pos=int(self._map(self.motors[m-1].Read_Pos(),-501433,501433,-180,180))
+            pos=int(self._map(angles[m-1],-180,180,-501433,501433))
+            self.Sent_Positions[m-1]=pos
+            self.motors[m-1].Write_Pos(pos)
+            time.sleep(3)
+                
     def inRange(self,value,id):
         return self.motors[id].DXL_MAXIMUM_POSITION_VALUE>value and self.motors[id].DXL_MINIMUM_POSITION_VALUE<value
 
@@ -249,7 +267,7 @@ class Arm:
                                 if mode_btn==0 and options_btn==0:
                                     if time.time() - start_time >= 5:
                                         MODE="PLANNING"
-                                            print("MODE CHANGED TO PLANNING !!! PAY ATTENTION!")
+                                        print("MODE CHANGED TO PLANNING !!! PAY ATTENTION!")
                             
                             if MODE=="FORWARD":
                             #FORWARD KINEMATICS CONTROL  
@@ -273,3 +291,25 @@ class Arm:
         """
         self.M1.Close_Port()
 
+class Gripper():
+    def __init__(self):
+        self.HOST = '172.20.10.7'  # replace with the IP address of your ESP
+        self.PORT = 80  # replace with the port number you set up on the ESP
+        self.release()
+
+    def pickup(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((self.HOST, self.PORT))
+            s.sendall(b'45')
+            success = s.recv(1024)
+            print('Received', repr(success))
+            return success
+
+    def release(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((self.HOST, self.PORT))
+            s.sendall(b'90')
+            success = s.recv(1024)
+            print('Received', repr(success))
+            return success
+        
