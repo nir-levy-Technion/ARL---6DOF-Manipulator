@@ -1,18 +1,29 @@
 import sys
+import cv2
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QSlider, QLineEdit, QTextEdit
 from PyQt5.QtCore import Qt, QTimer
 import qdarkstyle
-
+from PyQt5.QtGui import QImage, QPixmap
 class ArmControlGUI(QWidget):
     def __init__(self):
         super().__init__()
-       
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle("6-DOF Arm Control")
+        self.setWindowTitle("6-DOF Arm Control with Webcam")
 
-    
+        # Add the camera QLabel to the layout
+        self.camera_label = QLabel()
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.camera_label)
+
+        # Initialize the camera and timer
+        self.camera = cv2.VideoCapture(0)  # 0 is the default camera index, change it if you have multiple cameras
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_frame)
+        self.timer.start(30)  # Update the camera feed every 30 ms
+        
+        self.setWindowTitle("6-DOF Arm Control")
         motor1_label = QLabel("Motor 1:")
         self.motor1_slider = QSlider(Qt.Horizontal)
         self.motor1_slider.setMinimum(-180)
@@ -85,7 +96,8 @@ class ArmControlGUI(QWidget):
         set_ik_button.clicked.connect(self.set_ik)
         clear_button = QPushButton("Clear")
         clear_button.clicked.connect(self.clear_log)
-        
+        init_arm_button=QPushButton("Init Arm")
+        init_arm_button.clicked.connect(self.init_arm)
         self.message_log = QTextEdit()
         self.message_log.setReadOnly(True)
         self.message_log.append("Welcome to the 6-DOF Arm Control")
@@ -136,6 +148,9 @@ class ArmControlGUI(QWidget):
         hbox8.addWidget(clear_button)
         
         vbox = QVBoxLayout()
+        camera_layout = QVBoxLayout()
+        camera_layout.addWidget(self.camera_label)
+        vbox.addLayout(camera_layout)
         vbox.addLayout(hbox1)
         vbox.addLayout(hbox2)
         vbox.addLayout(hbox3)
@@ -146,25 +161,43 @@ class ArmControlGUI(QWidget):
         vbox.addLayout(hbox8)
         vbox.addWidget(self.message_log)
         self.setLayout(vbox)
-
-
+        
+    def init_arm(self):
+        # self.arm=Control.Arm()
+        pass
+        
     def get_position(self):
         # Get current angles from robot arm here
-        self.motor1_angle.setText(str(self.motor1_slider.value()))
-        self.motor2_angle.setText(str(self.motor2_slider.value()))
-        self.motor3_angle.setText(str(self.motor3_slider.value()))
-        self.motor4_angle.setText(str(self.motor4_slider.value()))
-        self.motor5_angle.setText(str(self.motor5_slider.value()))
-        self.motor6_angle.setText(str(self.motor6_slider.value()))
-        self.message_log.append("Current position retrieved.")
-        self.message_log.append(self.motor1_angle.text()+","+self.motor2_angle.text()+","+self.motor3_angle.text()+","+self.motor4_angle.text()+","+self.motor5_angle.text()+","+self.motor6_angle.text())
+        # get = Control.ThreadWithReturnValue(target=self.arm.get_Current_Pos)
+        # get.start()
+        # self.angles=get.join()
+        try:
+            self.motor1_angle.setText(str(self.angles[0]))
+            self.motor1_slider.setValue(self.angles[0])
+            self.motor2_angle.setText(str(self.angles[1]))
+            self.motor2_slider.setValue(self.angles[1])
+            self.motor3_angle.setText(str(self.angles[2]))
+            self.motor3_slider.setValue(self.angles[2])
+            self.motor4_angle.setText(str(self.angles[3]))
+            self.motor4_slider.setValue(self.angles[3])
+            self.motor5_angle.setText(str(self.angles[4]))
+            self.motor5_slider.setValue(self.angles[4])
+            self.motor6_angle.setText(str(self.angles[5]))
+            self.motor6_slider.setValue(self.angles[5])
+            
+            self.message_log.append("Current position retrieved.")
+            self.message_log.append(self.motor1_angle.text()+","+self.motor2_angle.text()+","+self.motor3_angle.text()+","+self.motor4_angle.text()+","+self.motor5_angle.text()+","+self.motor6_angle.text())
+        except Exception as e:
+            self.message_log.append("Error getting the position, try again.")
+            self.message_log.append(str(e))
+
 
     def set_arm(self):
         # Send angles from sliders to robot arm here
         self.message_log.append("Setting arm position...")
         self.message_log.append(self.motor1_angle.text()+","+self.motor2_angle.text()+","+self.motor3_angle.text()+","+self.motor4_angle.text()+","+self.motor5_angle.text()+","+self.motor6_angle.text())
-
-        pass
+        self.arm.Sent_Positions=[int(self.motor1_angle.text()),int(self.motor2_angle.text()),int(self.motor3_angle.text()),int(self.motor4_angle.text()),int(self.motor5_angle.text()),int(self.motor6_angle.text())]
+        self.arm.set_Current_Pos(self.arm.Sent_Positions)
 
     def get_ik(self):
         # Get inverse kinematics solution here
@@ -184,7 +217,30 @@ class ArmControlGUI(QWidget):
         self.message_log.append(f"Setting arm position using IK for x:{x}, y:{y}, z:{z}")
 
         pass
+        
+    def update_frame(self):
+        ret, frame = self.camera.read()
+        if ret:
+            rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            h, w, ch = rgb_image.shape
+            bytes_per_line = ch * w
+            qimage = QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888)
+            pixmap = QPixmap.fromImage(qimage)
+            self.camera_label.setPixmap(pixmap)
 
+    def closeEvent(self, event):
+        self.camera.release()
+        event.accept()
+    
+    def on_button_click(self, index):
+        pass
+        # self.message_log.append(f"Button {index + 1} clicked")
+        # Add the logic for each button here
+
+    def closeEvent(self, event):
+        if self.camera:
+            self.camera.stop()
+        super().closeEvent(event)
     def clear_log(self):
         self.message_log.clear()
         

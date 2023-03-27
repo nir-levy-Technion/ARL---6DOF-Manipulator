@@ -1,3 +1,4 @@
+#comms for each motor
 import os
 import time
 if os.name == 'nt':

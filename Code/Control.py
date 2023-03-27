@@ -1,9 +1,11 @@
+#Control.py - creating arm build from 6 motors.
 import move
 import PS4Controller
 import time
 from ikpy import chain
 import numpy as np
 import socket 
+import threading
 class Arm:
     
     def __init__(self) -> None:
@@ -30,7 +32,7 @@ class Arm:
         for m in self.motors:
             m.SetCurrentLimit(15000)
             m.SetAccelLimit(500)
-            m.SetVelocityLimit(200)
+            m.SetVelocityLimit(300)
         self.EnableTorque()
         self.Home()
         # self.Homeorder()
@@ -183,7 +185,7 @@ class Arm:
         return joint_angles
     
     def Home(self):
-        self.set_Current_Pos([0,0,0,0,0,0])
+        self.set_Current_Pos([0,0,0,90,0,0])
         
     def Homeorder(self):
         finished=False
@@ -286,7 +288,7 @@ class Arm:
                             #PLANNING CONTROL  - Running Predetermined Plan
                                 pass 
             
-
+    
     def Exit(self):
         """Kill motors
 
@@ -317,5 +319,18 @@ class Gripper():
             print('Received', repr(success))
             return success
         
-arm=Arm()
-# arm.DisableTorque()
+class ThreadWithReturnValue(threading.Thread):
+    def __init__(self, group=None, target=None, name=None,
+                 args=(), kwargs={}):
+        threading.Thread.__init__(self, group, target, name, args, kwargs)
+        self._return = None
+        self._Thread__target=target
+        self._Thread__args=args
+        self._Thread__kwargs=kwargs
+    def run(self):
+        if self._Thread__target is not None:
+            self._return = self._Thread__target(*self._Thread__args,
+                                                **self._Thread__kwargs)
+    def join(self):
+        threading.Thread.join(self)
+        return self._return
