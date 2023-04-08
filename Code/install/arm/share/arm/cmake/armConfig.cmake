@@ -1,0 +1,1 @@
+/home/nir/code/ARL---6DOF-Manipulator/Code/build/arm/ament_cmake_core/armConfig.cmake

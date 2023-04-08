@@ -1,0 +1,15 @@
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/ament_index/resource_index/package_run_dependencies/arm
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/ament_index/resource_index/parent_prefix_path/arm
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/arm/environment/ament_prefix_path.sh
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/arm/environment/ament_prefix_path.dsv
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/arm/environment/path.sh
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/arm/environment/path.dsv
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/arm/local_setup.bash
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/arm/local_setup.sh
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/arm/local_setup.zsh
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/arm/local_setup.dsv
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/arm/package.dsv
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/ament_index/resource_index/packages/arm
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/arm/cmake/armConfig.cmake
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/arm/cmake/armConfig-version.cmake
+/home/nir/code/ARL---6DOF-Manipulator/Code/install/arm/share/arm/package.xml

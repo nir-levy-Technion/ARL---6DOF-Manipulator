@@ -1,0 +1,4 @@
+Invoking command in '/home/nir/code/ARL---6DOF-Manipulator/Code/build/arm': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/nir/code/ARL---6DOF-Manipulator/Code/build/arm -- -j8 -l8
+Invoked command in '/home/nir/code/ARL---6DOF-Manipulator/Code/build/arm' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/nir/code/ARL---6DOF-Manipulator/Code/build/arm -- -j8 -l8
+Invoking command in '/home/nir/code/ARL---6DOF-Manipulator/Code/build/arm': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/nir/code/ARL---6DOF-Manipulator/Code/build/arm
+Invoked command in '/home/nir/code/ARL---6DOF-Manipulator/Code/build/arm' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/nir/code/ARL---6DOF-Manipulator/Code/build/arm
