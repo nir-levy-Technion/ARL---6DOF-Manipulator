@@ -28,12 +28,17 @@ class Arm:
         self.Sent_Positions=[0,0,0,0,0,0]
         self.motors=[self.M1,self.M2,self.M3,self.M4,self.M5,self.M6]
         for m in self.motors:
+            m.Disable_Torque()
             m.SetCurrentLimit(15000)
             m.SetAccelLimit(500)
-            m.SetVelocityLimit(100)
+            m.SetVelocityLimit(250)
         self.EnableTorque()
-        self.Home()
-        
+        # try:
+        #     self.Home()
+        # except:
+        #     print("Homing stopped")
+            
+            
     def EnableTorque(self):
         """_summary_
 
@@ -122,12 +127,19 @@ class Arm:
         """
         for idx in range(len(self.motors)):
             pos=int(self._map(angles[idx],-180,180,-501433,501433))
-            print(pos)
+            #print(pos)
             # if pos>=self.RANGES[idx][0] and pos<=self.RANGES[idx][1]:
             self.motors[idx].Write_Pos(pos)
             self.Sent_Positions[idx]=pos
             # else:
             #     print("Angle "+str(idx)+" is out of range! ")
+    
+    def set_motor_pos(self,id,angle):
+        pos=int(self._map(angle,-180,180,-501433,501433))
+        self.motors[id-1].Write_Pos(pos)
+        self.Sent_Positions[id-1]=pos
+
+
     
     def set_Pos_order(self,angles,order):
         """get all angles and set positions 
@@ -144,6 +156,8 @@ class Arm:
             time.sleep(3)
                 
     def inRange(self,value,id):
+        if value>501433:
+                value=value-1541769.5
         return self.motors[id].DXL_MAXIMUM_POSITION_VALUE>value and self.motors[id].DXL_MINIMUM_POSITION_VALUE<value
 
     def get_currents(self):
@@ -176,7 +190,7 @@ class Arm:
             list: positions for all motors
         """
         return self.Sent_Positions
-    def SetXYZ(self,position,orientation,q_init):
+    def SetXYZ(self, position, orientation, q_init):
         """Inverse Kinemtics
 
         Args:
@@ -186,23 +200,32 @@ class Arm:
         """
         # Define the DH parameters of the robot arm
         dh_params = [
-        {'alpha': np.pi/2, 'a': 0, 'd': 0.3, 'theta': 0},
-        {'alpha': 0, 'a': 0.4, 'd': 0, 'theta': 0},
-        {'alpha': 0, 'a': 0.4, 'd': 0, 'theta': 0},
-        {'alpha': np.pi/2, 'a': 0, 'd': 0.4, 'theta': 0},
-        {'alpha': np.pi/2, 'a': 0, 'd': 0.4, 'theta': 0},
-        {'alpha': 0, 'a': 0, 'd': 0, 'theta': 0}
+            {'alpha': np.pi/2, 'a': 0, 'd': 0.3, 'theta': 0},
+            {'alpha': 0, 'a': 0.4, 'd': 0, 'theta': 0},
+            {'alpha': 0, 'a': 0.4, 'd': 0, 'theta': 0},
+            {'alpha': np.pi/2, 'a': 0, 'd': 0.4, 'theta': 0},
+            {'alpha': np.pi/2, 'a': 0, 'd': 0.4, 'theta': 0},
+            {'alpha': 0, 'a': 0, 'd': 0, 'theta': 0}
         ]
 
-       # Create an instance of the Chain class
+        # Create an instance of the Chain class
         my_chain = chain.Chain.from_dh_parameters(dh_params)
 
         # Define the desired position and orientation of the end effector
         end_effector_pose = np.array([orientation, position])
-        
-        joint_angles = my_chain.inverse_kinematics(end_effector_pose, q_init)
+
+        # Define the angle range limits for each joint
+        joint_angle_limits = [(-180, 180), (-180, 180), (-180, 180), (-180, 180), (-180, 180), (-180, 180)]
+
+        # Combine the angle range limits and bounds into a single argument for the inverse kinematics function
+        constraints = chain.Constraint.from_bounds(joint_angle_limits)
+
+        # Calculate the joint angles with the angle range limits and bounds
+        joint_angles = my_chain.inverse_kinematics(end_effector_pose, q_init, constraints=constraints)
+
         print(joint_angles)
         return joint_angles
+
 
     def Home(self):
         finished=False
@@ -262,48 +285,98 @@ class Arm:
                                 if kill_btn==0:
                                     print("Exit")
                                     self.Exit()
-                                 
-                            if mode_btn==1  :
-                                start_time = time.time()
-                                mode_btn=self.ps4.share()
-                                if mode_btn==0:
-                                    if time.time() - start_time >= 5:
-                                        if MODE=="FORWARD":
-                                            MODE="INVERSE"
-                                            print("MODE CHANGED TO INVERSE KINEMATIC!!! PAY ATTENTION!")
-                                        elif MODE=="INVERSE":
-                                            MODE="FORWARD"  
-                                            print("MODE CHANGED TO FORWARD KINEMATIC!!! PAY ATTENTION!")
-                                        elif MODE=="SELFAWARENESS":
-                                            MODE="FORWARD"  
-                                            print("MODE CHANGED TO FORWARD KINEMATIC!!! PAY ATTENTION!")
-                            if mode_btn==1 and MODE!="SELFAWARENESS":
-                                current_time = time.time()
-                                if last_press_time is not None and current_time - last_press_time <= double_press_threshold:
-                                    MODE="SELFAWARENESS"
-                                    print("MODE CHANGED TO SELFAWARENESS!!! PAY ATTENTION!")   
-                                    last_press_time = current_time
-                                    
-                            if mode_btn==1 and options_btn==1 :
-                                start_time = time.time()
-                                mode_btn=self.ps4.share()
-                                if mode_btn==0 and options_btn==0:
-                                    if time.time() - start_time >= 5:
-                                        MODE="PLANNING"
-                                        print("MODE CHANGED TO PLANNING !!! PAY ATTENTION!")
+                                
+                            self.MODE=self.ps4.choose_mode()
                             
-                            if MODE=="FORWARD":
-                            #FORWARD KINEMATICS CONTROL  
-                                pass  
-                            if MODE=="INVERSE":
-                            #INVERSE KINEMATICS CONTROL  
-                                pass  
-                            if MODE=="SELFAWARENESS":
-                            #SELFAWARENESS CONTROL  - POLICY RUNNING NEURAL NETWORK 
+                            if self.MODE=="FORWARD":
+                            # FORWARD KINEMATICS CONTROL  
+                                
+                                # Control the robotic arm motors using the PS4 controller
+                                angles = self.get_Pos()
+                                left_x = self.ps4.get_Left_thumb()[0]
+                                left_y = self.ps4.get_Left_thumb()[1]
+                                right_x = self.ps4.get_Right_thumb()[0]
+                                right_y = self.ps4.get_Right_thumb()[1]
+                                L1=self.ps4.L1()
+                                L2=self.ps4.L2()
+                                R1=self.ps4.R1()
+                                R2=self.ps4.R2()
+
+                                # Update motor angles based on thumbstick and trigger inputs
+                                angles[0] += left_x/100
+                                angles[1] += left_y/100
+                                angles[2] += right_x/100
+                                angles[3] += right_y/100
+                                angles[4] += R1-L1
+                                angles[5] += R2-L2
+
+                                # Set motor positions based on updated angles
+                                self.set_Pos(angles)
+
+                                # Control the gripper using the D-pad
+                                gripper = Gripper()
+                                thumbL = self.ps4.ThumbL()
+                                thumbR = self.ps4.ThumbR()
+
+                                if thumbL == 1:
+                                    gripper.pickup()
+                                elif thumbR == 1:
+                                    gripper.release()
+
+                                # Delay to prevent the motors from moving too fast
+                                time.sleep(0.1)
+
+                                
+                            if self.MODE=="INVERSE":
+                                # INVERSE KINEMATICS CONTROL
+                                target_position = [0, 0, 0]
+                                target_orientation= [0, 0, 0]
+                                # Use the right thumbstick to control the target position (x, y, z)
+                                right_x = self.ps4.get_Right_thumb()[0]
+                                right_y = self.ps4.get_Right_thumb()[1]
+                                L2 = self.ps4.L2()
+                                L1 = self.ps4.L1()
+
+                                target_position[0] += right_x / 100
+                                target_position[1] += right_y / 100
+                                target_position[2] += (L2 - L1) / 100
+
+                                # Use the left thumbstick to control the target orientation (roll, pitch, yaw)
+                                left_x = self.ps4.get_Left_thumb()[0]
+                                left_y = self.ps4.get_Left_thumb()[1]
+                                R2 = self.ps4.R2()
+                                R1 = self.ps4.R1()
+
+                                target_orientation[0] += left_x / 100
+                                target_orientation[1] += left_y / 100
+                                target_orientation[2] += (R2 - R1) / 100
+
+                                # Calculate the joint angles using the inverse kinematics function
+                                joint_angles = self.SetXYZ(target_position, target_orientation,self.get_Pos())
+
+                                # Set motor positions based on the calculated joint angles
+                                self.set_Pos(joint_angles)
+
+                                # Control the gripper using the D-pad
+                                gripper = Gripper()
+                                thumbL = self.ps4.ThumbL()
+                                thumbR = self.ps4.ThumbR()
+
+                                if thumbL == 1:
+                                    gripper.pickup()
+                                elif thumbR == 1:
+                                    gripper.release()
+
+                                # Delay to prevent the motors from moving too fast
+                                time.sleep(0.1)
+  
+                            if self.MODE=="SELFAWARENESS":
+                            # SELFAWARENESS CONTROL  - POLICY RUNNING NEURAL NETWORK 
                                 pass 
-                            if MODE=="PLANNING":
-                            #PLANNING CONTROL  - Running Predetermined Plan
-                                pass 
+                            if self.MODE=="PLANNING":
+                            # PLANNING CONTROL  - Running Predetermined Plan
+                                pass
+
             
 
     def Exit(self):
@@ -336,3 +409,7 @@ class Gripper():
             print('Received', repr(success))
             return success
         
+
+arm=Arm()
+# arm.set_Pos([30,30,30,30,30,30])
+arm.set_Pos([0,0,0,0,0,0])

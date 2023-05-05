@@ -1,13 +1,13 @@
 import evdev
 from evdev import InputDevice, categorize, ecodes
-
+import time
 class PS4Controller:
     def __init__(self) -> None:     
         # Connect to the controller
         devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
         for device in devices:
             if device.name == 'Wireless Controller':
-                self.ps4 = InputDevice(device.fn)
+                self.ps4 = InputDevice(device.path)
                 break
 
         # Print out device information
@@ -132,6 +132,36 @@ class PS4Controller:
             if event.type == evdev.ecodes.EV_KEY:
                 if event.code == evdev.ecodes.BTN_MODE:
                     return event.value#1-pressed,0-released
+                
+    def choose_mode(self):
+        options_btn=self.ps4.options()
+        if mode_btn==1  :
+            start_time = time.time()
+            mode_btn=self.ps4.share()
+            if mode_btn==0:
+                if time.time() - start_time >= 5:
+                    if MODE=="FORWARD":
+                        MODE="INVERSE"
+                        print("MODE CHANGED TO INVERSE KINEMATIC!!! PAY ATTENTION!")
+                    elif MODE=="INVERSE":
+                        MODE="FORWARD"  
+                        print("MODE CHANGED TO FORWARD KINEMATIC!!! PAY ATTENTION!")
+                    elif MODE=="SELFAWARENESS":
+                        MODE="FORWARD"  
+                        print("MODE CHANGED TO FORWARD KINEMATIC!!! PAY ATTENTION!")
+        if mode_btn==1 and MODE!="SELFAWARENESS":
+            current_time = time.time()
+            if last_press_time is not None and current_time - last_press_time <= double_press_threshold:
+                MODE="SELFAWARENESS"
+                print("MODE CHANGED TO SELFAWARENESS!!! PAY ATTENTION!")   
+                last_press_time = current_time
+                
+        if mode_btn==1 and options_btn==1 :
+            start_time = time.time()
+            mode_btn=self.ps4.share()
+            if mode_btn==0 and options_btn==0:
+                if time.time() - start_time >= 5:
+                    MODE="PLANNING"
+                    print("MODE CHANGED TO PLANNING !!! PAY ATTENTION!")
+        return MODE
         
-
-
