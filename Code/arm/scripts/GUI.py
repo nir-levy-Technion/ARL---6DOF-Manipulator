@@ -1,18 +1,43 @@
 import sys
 import cv2
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QSlider, QLineEdit, QTextEdit,QCheckBox,QInputDialog,QMainWindow
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QSlider, QLineEdit, QTextEdit,QCheckBox,QInputDialog,QMainWindow,QGridLayout
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal,QObject
 import qdarkstyle
 from PyQt5.QtGui import QImage, QPixmap
 from qtwidgets import Toggle
 from qtwidgets import AnimatedToggle
-
+#import busio
+#import board
+#import GPIO
 class ArmControlGUI(QWidget):
     motor_angle_changed = pyqtSignal(int, int)
     def __init__(self, *args, **kwargs):
         super(QWidget, self).__init__(*args, **kwargs)
         self.initUI()
+        #self.initGPIO()
         
+    def initGPIO(self):
+        pass
+        #i2c = busio.I2C(board.SCL, board.SDA)
+        #self.gpio = GPIO(i2c)
+
+        # Setup GPIO pins as output
+        #for i in range(16):
+        #    self.gpio.setup(i, 'OUT')
+
+        # Connect the on/off sliders to the GPIO output method
+        #for i in range(16):
+        #    self.on_off_sliders[i].valueChanged.connect(lambda value, pin=i: self.gpio.output(pin, bool(value)))
+
+        # Connect the mode sliders to the GPIO setup method
+        #for i in range(16):
+        #    self.mode_sliders[i].valueChanged.connect(lambda value, pin=i: self.gpio.setup(pin, 'OUT' if value == 0 else 'IN'))
+    
+    def closeEvent(self, event):
+        # Clean up GPIO before closing the application
+        self.gpio.cleanup()
+        event.accept()
+
     def initUI(self):
         self.setWindowTitle("6-DOF Arm Control")
 
@@ -236,6 +261,82 @@ class ArmControlGUI(QWidget):
         stop_button = QPushButton("Stop")
         stop_button.clicked.connect(self.stop)
         
+       # Create AnimatedToggle widgets for GPIO control
+        self.gpio_toggles = []
+        self.gpio_labels = []
+        self.gpio_layout = QGridLayout()
+
+        num_rows = 2
+        num_columns = 8
+
+        for i in range(16):
+            toggle = AnimatedToggle()
+            #label = QLabel(f"GPIO {i+1}")
+            self.gpio_toggles.append(toggle)
+
+            # Create a QHBoxLayout for the toggle and label
+            hbox = QHBoxLayout()
+            hbox.addWidget(toggle)
+            #hbox.addWidget(label)
+
+            # Create a QLabel for the text indicating the state
+            state_label = QLabel(f"{i+1} Off")
+            state_label.setAlignment(Qt.AlignCenter)
+            state_label.setStyleSheet("font-weight: bold;")
+
+            # Add the state label to the QHBoxLayout
+            hbox.addWidget(state_label)
+
+            # Calculate the row and column indices based on the toggle index
+            row = i // num_columns
+            col = i % num_columns
+
+            # Add the QHBoxLayout to the grid layout
+            self.gpio_layout.addLayout(hbox, row, col)
+
+            # Adjust the size of the toggle
+            toggle.setFixedSize(80, 40)
+
+            # Connect the state changed signal of the toggle to update the state label
+            toggle.stateChanged.connect(lambda state, label=state_label, index=i+1: label.setText(f"{index} On" if state else f"{index} Off"))
+
+
+        # Create AnimatedToggle widgets for GPIO mode control
+        self.mode_toggles = []
+        self.mode_labels = []
+        self.mode_layout = QGridLayout()
+
+        for i in range(16):
+            toggle = AnimatedToggle()
+            #label = QLabel(f"GPIO {i+1} Mode")
+            self.mode_toggles.append(toggle)
+
+            # Create a QHBoxLayout for the toggle and label
+            hbox = QHBoxLayout()
+            hbox.addWidget(toggle)
+            #hbox.addWidget(label)
+
+            # Create a QLabel for the text indicating the mode
+            mode_label = QLabel(f"{i+1} In")
+            mode_label.setAlignment(Qt.AlignCenter)
+            mode_label.setStyleSheet("font-weight: bold;")
+
+            # Add the mode label to the QHBoxLayout
+            hbox.addWidget(mode_label)
+
+            # Calculate the row and column indices based on the toggle index
+            row = i // num_columns
+            col = i % num_columns
+
+            # Add the QHBoxLayout to the grid layout
+            self.mode_layout.addLayout(hbox, row, col)
+
+            # Adjust the size of the toggle
+            toggle.setFixedSize(80, 40)
+
+            # Connect the state changed signal of the toggle to update the mode label
+            toggle.stateChanged.connect(lambda state, label=mode_label, index=i+1: label.setText(f"{index} Out" if state else f"{index} In"))
+
         hbox1 = QHBoxLayout()
         hbox1.addWidget(motor1_label)
         hbox1.addWidget(self.motor1_slider)
@@ -312,6 +413,8 @@ class ArmControlGUI(QWidget):
         vbox.addLayout(hbox7)
         vbox.addLayout(hbox8)
         vbox.addLayout(hbox9)
+        vbox.addLayout(self.mode_layout)
+        vbox.addLayout(self.gpio_layout)
         vbox.addWidget(self.message_log)
         # Create a QHBoxLayout to put the camera and controls side by side
         hbox_main = QHBoxLayout()
@@ -319,6 +422,7 @@ class ArmControlGUI(QWidget):
         hbox_main.addLayout(vbox)
 
         self.setLayout(hbox_main)
+        self.showFullScreen()
         
     def init_arm(self):
         # self.arm=Control.Arm()

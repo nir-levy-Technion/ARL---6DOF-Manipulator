@@ -2,6 +2,9 @@ import move
 import PS4Controller
 import time
 from ikpy import chain
+from ikpy.chain import Chain
+from ikpy.link import OriginLink, URDFLink
+from ikpy.utils import geometry
 import numpy as np
 import socket 
 class Arm:
@@ -190,38 +193,56 @@ class Arm:
             list: positions for all motors
         """
         return self.Sent_Positions
-    def SetXYZ(self, position, orientation, q_init):
+    def SetXYZWithoutOrientation(self,position, q_init):
+        """Inverse Kinemtics without orientation
+
+        Args:
+            position (List[]): [x, y, z],
+            q_init (q_init = np.array([0, 0, 0, 0, 0, 0])): initial values conditions, joint angles.
+        """
+
+        # Create an instance of the Chain class with your robot's links
+        my_chain = Chain(name='my_chain', links=[
+            OriginLink(),
+            URDFLink(name="link1", bounds=(-180, 180), translation_vector=[0, 0, 135], orientation=[0, 1, 0], rotation=0),
+            URDFLink(name="link2", bounds=(-180, 180), translation_vector=[0, 0, 30], orientation=[0, 1, 0], rotation=0),
+            URDFLink(name="link3", bounds=(-180, 180), translation_vector=[395, 0, 0], orientation=[0, 1, 0], rotation=np.pi),
+            URDFLink(name="link4", bounds=(-180, 180), translation_vector=[375, 0, 0], orientation=[1, 0, 0], rotation=0),
+            URDFLink(name="link5", bounds=(-180, 180), translation_vector=[0, 0, 30], orientation=[0, 1, 0], rotation=0),
+            URDFLink(name="link6", bounds=(-180, 180), translation_vector=[155, 0, 0], orientation=[0, 1, 0], rotation=0),
+        ])
+
+        # Define the desired position of the end effector
+        end_effector_position = np.array(position + [1])
+
+        # Calculate the joint angles without orientation constraints
+        joint_angles = my_chain.inverse_kinematics(end_effector_position, initial_position=q_init, solve_rotation=False)
+
+        print(joint_angles)
+        return joint_angles
+
+    def SetXYZ(self,position, orientation, q_init):
         """Inverse Kinemtics
 
         Args:
             position (List[]): [x,y,z,1],
             orientation (List[,]): [[u_x,v_x,w_x],[u_y,v_y,w_y],[u_z,v_z,w_z]]
-            q_init (q_init = np.array([0, 0, 0, 0, 0, 0])): initial values conditions,joint angles.
+            q_init (q_init = np.array([0, 0, 0, 0, 0, 0])): initial values conditions, joint angles.
         """
-        # Define the DH parameters of the robot arm
-        dh_params = [
-            {'alpha': np.pi/2, 'a': 0, 'd': 0.3, 'theta': 0},
-            {'alpha': 0, 'a': 0.4, 'd': 0, 'theta': 0},
-            {'alpha': 0, 'a': 0.4, 'd': 0, 'theta': 0},
-            {'alpha': np.pi/2, 'a': 0, 'd': 0.4, 'theta': 0},
-            {'alpha': np.pi/2, 'a': 0, 'd': 0.4, 'theta': 0},
-            {'alpha': 0, 'a': 0, 'd': 0, 'theta': 0}
-        ]
 
-        # Create an instance of the Chain class
-        my_chain = chain.Chain.from_dh_parameters(dh_params)
-
-        # Define the desired position and orientation of the end effector
-        end_effector_pose = np.array([orientation, position])
-
-        # Define the angle range limits for each joint
-        joint_angle_limits = [(-180, 180), (-180, 180), (-180, 180), (-180, 180), (-180, 180), (-180, 180)]
-
-        # Combine the angle range limits and bounds into a single argument for the inverse kinematics function
-        constraints = chain.Constraint.from_bounds(joint_angle_limits)
+        # Create an instance of the Chain class with your robot's links
+        my_chain = Chain(name='my_chain', links=[
+            OriginLink(),
+            ModifiedURDFLink(name="link1", bounds=(-180, 180), origin_translation=[0, 0, 135], origin_orientation=np.eye(3), rotation=q_init[0]),
+            ModifiedURDFLink(name="link2", bounds=(-180, 180), origin_translation=[0, 0, 30], origin_orientation=np.eye(3), rotation=q_init[1]),
+            ModifiedURDFLink(name="link3", bounds=(-180, 180), origin_translation=[395, 0, 0], origin_orientation=np.eye(3), rotation=q_init[2] + np.pi),
+            ModifiedURDFLink(name="link4", bounds=(-180, 180), origin_translation=[375, 0, 0], origin_orientation=np.eye(3), rotation=q_init[3]),
+            ModifiedURDFLink(name="link5", bounds=(-180, 180), origin_translation=[0, 0, 30], origin_orientation=np.eye(3), rotation=q_init[4]),
+            ModifiedURDFLink(name="link6", bounds=(-180, 180), origin_translation=[155, 0, 0], origin_orientation=np.eye(3), rotation=q_init[5]),
+        ])
 
         # Calculate the joint angles with the angle range limits and bounds
-        joint_angles = my_chain.inverse_kinematics(end_effector_pose, q_init, constraints=constraints)
+        joint_angles = my_chain.inverse_kinematics(target_position=position, target_orientation=orientation, initial_position=q_init)
 
         print(joint_angles)
         return joint_angles
@@ -386,6 +407,10 @@ class Arm:
             void
         """
         self.M1.Close_Port()
+class ModifiedURDFLink(URDFLink):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.symbolic_transformation_matrix = self._apply_geometric_transformations(theta=self.theta, mu=self.mu, symbolic=False)
 
 class Gripper():
     def __init__(self):
@@ -411,5 +436,6 @@ class Gripper():
         
 
 arm=Arm()
-# arm.set_Pos([30,30,30,30,30,30])
 arm.set_Pos([0,0,0,0,0,0])
+
+arm.SetXYZ([300,300,300],[[0,0,0],[0,0,0],[0,0,0]],[0,0,0,0,0,0])
